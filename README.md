@@ -72,11 +72,11 @@ Compared with conventional fusion pipelines that are heavily tied to a fixed sen
 
 Ultra-Fusion is evaluated on:
 
-- **M3DGR** (including simulation extension),
-- **M2DGR-Plus**,
-- **KAIST**,
-- **GrandTour** (legged),
-- **MARS-LVIG** (aerial).
+- [**M3DGR**](https://github.com/sjtuyinjie/M3DGR) (including simulation extension),
+- [**M2DGR-Plus**](https://github.com/SJTU-ViSYS/M2DGR-plus),
+- [**KAIST (Complex Urban Dataset)**](https://sites.google.com/view/complex-urban-dataset),
+- [**GrandTour**](https://github.com/leggedrobotics/grand_tour_dataset) (legged),
+- [**MARS-LVIG**](https://mars.hku.hk/dataset.html) (aerial).
 
 Across these datasets, the paper reports competitive localization performance and improved availability under:
 
