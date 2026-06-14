@@ -2,8 +2,9 @@
 
 <div align="center">
 
+[![Website](https://img.shields.io/badge/Website-Ultra--Fusion-blue)](https://sjtuyinjie.github.io/ultrafusion-web/)
 [![Platform](https://img.shields.io/badge/Platforms-Ground%20%7C%20Legged%20%7C%20Aerial-green)](#cross-platform-results)
-[![License](https://img.shields.io/badge/License-TBD-orange)](#license)
+[![License](https://img.shields.io/badge/License-MIT-orange)](#license)
 
 </div>
 
@@ -11,6 +12,9 @@ Ultra-Fusion is a tightly-coupled multi-sensor SLAM/localization framework for i
 It is designed for real deployment where sensor degradation (illumination changes, LiDAR degeneracy, wheel slippage, GNSS outage) and spatiotemporal miscalibration are common.
 
 The system unifies WIO, VIO, LIO, and LVIO in one configurable optimization framework, with optional wheel/GNSS fusion and online calibration.
+
+> [!NOTE]
+> We currently release executable binaries and demos. Full source code will be released after paper acceptance.
 
 ---
 
@@ -62,11 +66,7 @@ Compared with conventional fusion pipelines that are heavily tied to a fixed sen
 </p>
 <p align="center"><em>Trajectory estimation examples on ground, legged, and UAV datasets.</em></p>
 
-> [!NOTE]
-> For open-source release, place paper figures in `images/` using the filenames above:
-> `pipeline.png`, `degradation_qualitative.png`, and `trajs.png`.
 
----
 
 ## Benchmarks and Findings
 
@@ -136,4 +136,4 @@ If you find this project useful, please cite:
 
 ## License
 
-License information will be added at release time.
+This project is licensed under the MIT License.
