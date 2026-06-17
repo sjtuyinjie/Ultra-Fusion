@@ -166,6 +166,7 @@ rosbag play /media/path/to/your.bag --clock
 Run Ultra-Fusion in another shell:
 
 ```bash
+uf_node m3dgr
 uf_node m3dgr_01
 uf_node m3dgr_02
 ```
@@ -174,21 +175,24 @@ M3DGR public release profiles:
 
 | Command | Config | Recommended benchmark setting |
 | --- | --- | --- |
+| `uf_node m3dgr` | `/opt/ultrafusion/config/m3dgr/uf_m3dgr_02.yaml` | Default public M3DGR profile: Corridor01, GNSS-denial01, Longtime01, and Longtime02 |
 | `uf_node m3dgr_01` | `/opt/ultrafusion/config/m3dgr/uf_m3dgr_01.yaml` | M3DGR general wheeled LVWIO profile: Dynamic01, Varying-illu01, Dark01, and Occlusion01 |
 | `uf_node m3dgr_02` | `/opt/ultrafusion/config/m3dgr/uf_m3dgr_02.yaml` | M3DGR long-horizon / visually degraded LVIO profile: Corridor01, GNSS-denial, Longtime01, and Longtime02 |
 
-`uf_node m3dgr` is kept as a short alias for `m3dgr_02`.
+`uf_node m3dgr` is the default public M3DGR shortcut and is equivalent to
+`uf_node m3dgr_02`.
 
 ### Other Released Configs
 
-These additional public shortcuts are also included for reproducibility. The
-table lists the sequences/settings covered by the released configs; other
-sequences may require parameter retuning.
+These additional public shortcuts are included for reproducibility. The table
+lists the dataset sequences/settings covered by the released profiles. Sequences
+not listed here are outside the public release profile coverage and may require
+separate parameter retuning.
 
 | Command | Config | Recommended sequences/settings |
 | --- | --- | --- |
 | `uf_node m2p` | `/opt/ultrafusion/config/m2p/uf_m2p.yaml` | M2DGR-Plus bridge1-style LVWIO setting |
-| `uf_node lvig` | `/opt/ultrafusion/config/lvig/uf_lvig.yaml` | MARS-LVIG HKairport01-style LVIO setting |
+| `uf_node lvig` | `/opt/ultrafusion/config/lvig/uf_lvig.yaml` | MARS-LVIG HKairport01 LVIO setting |
 | `uf_node kaist` | `/opt/ultrafusion/config/kaist/uf_kaist.yaml` | KAIST urban25 and urban35 |
 | `uf_node groundtour` | `/opt/ultrafusion/config/groundtour/uf_groundtour.yaml` | GrandTour SPX-2, SNOW-2, and EIG-1 |
 
@@ -204,6 +208,9 @@ uf_node /opt/ultrafusion/config/m3dgr/uf_m3dgr_01.yaml
 
 - [M3DGR](https://github.com/sjtuyinjie/M3DGR)
 - [M2DGR-Plus](https://github.com/sjtuyinjie/M2DGR-plus)
+- [MARS-LVIG](https://mars.hku.hk/dataset.html)
+- [KAIST Complex Urban Dataset](https://sites.google.com/view/complex-urban-dataset)
+- [GrandTour](https://github.com/leggedrobotics/grand_tour_dataset)
 
 More benchmark links and sequence-level setup instructions will be added with the release package.
 
