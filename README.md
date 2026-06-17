@@ -101,11 +101,7 @@ Alibaba Cloud ACR:
 docker pull registry.cn-hangzhou.aliyuncs.com/bit_robot_image/ultrafusion:0.1.0
 ```
 
-Docker Hub:
-
-```bash
-docker pull maotiandocker/ultrafusion:0.1.0
-```
+Docker Hub will be published after registry authentication is available.
 
 Or build the public runtime image from the Dockerfile:
 
@@ -126,7 +122,7 @@ docker run --rm -it --net=host --ipc=host \
   -e QT_X11_NO_MITSHM=1 \
   -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
   -v /media:/media:ro \
-  maotiandocker/ultrafusion:0.1.0
+  registry.cn-hangzhou.aliyuncs.com/bit_robot_image/ultrafusion:0.1.0
 ```
 
 Inside the container, download and install the release package:
