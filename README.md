@@ -124,7 +124,7 @@ wget -O /tmp/ultrafusion.deb \
 # wget -O /tmp/ultrafusion.deb \
 #   http://47.100.60.229:8088/loc_map/releases/ultrafusion/ultrafusion_0.1.0_amd64.deb
 
-echo "32400edd7df49a1cbfb80b65becf562a9d6e33eb06b3607c9bec7b4b1b70da4a  /tmp/ultrafusion.deb" | sha256sum -c -
+echo "c9a40d62df6100006431598d672c943f23f116e973e9c3b111d76d76c059196c  /tmp/ultrafusion.deb" | sha256sum -c -
 
 dpkg -i /tmp/ultrafusion.deb
 ```
@@ -160,20 +160,21 @@ Run Ultra-Fusion in another shell:
 
 ```bash
 uf_node m3dgr
-uf_node m3dgr_01
-uf_node m3dgr_02
+uf_node m3dgr_standard
+uf_node m3dgr_image_enhance
 ```
 
 M3DGR public release profiles:
 
 | Command | Config | Recommended benchmark setting |
 | --- | --- | --- |
-| `uf_node m3dgr` | `/opt/ultrafusion/config/m3dgr/uf_m3dgr_02.yaml` | Default public M3DGR profile: Corridor01, GNSS-denial01, Longtime01, and Longtime02 |
-| `uf_node m3dgr_01` | `/opt/ultrafusion/config/m3dgr/uf_m3dgr_01.yaml` | M3DGR general wheeled LVWIO profile: Dynamic01, Varying-illu01, Dark01, and Occlusion01 |
-| `uf_node m3dgr_02` | `/opt/ultrafusion/config/m3dgr/uf_m3dgr_02.yaml` | M3DGR long-horizon / visually degraded LVIO profile: Corridor01, GNSS-denial, Longtime01, and Longtime02 |
+| `uf_node m3dgr` | `/opt/ultrafusion/config/m3dgr/uf_m3dgr_standard.yaml` | Default M3DGR standard profile |
+| `uf_node m3dgr_standard` | `/opt/ultrafusion/config/m3dgr/uf_m3dgr_standard.yaml` | Standard wheeled LVWIO profile: Dynamic01, Varying-illu01, Dark01, and Occlusion01 |
+| `uf_node m3dgr_image_enhance` | `/opt/ultrafusion/config/m3dgr/uf_m3dgr_image_enhance.yaml` | Stronger visual-coupling profile: Corridor01, GNSS-denial01, Longtime01, and Longtime02 |
 
 `uf_node m3dgr` is the default public M3DGR shortcut and is equivalent to
-`uf_node m3dgr_02`.
+`uf_node m3dgr_standard`. Legacy aliases `uf_node m3dgr_01` and
+`uf_node m3dgr_02` are still supported for backward compatibility.
 
 ### Other Released Configs
 
@@ -192,7 +193,7 @@ separate parameter retuning.
 You can also pass a config path directly:
 
 ```bash
-uf_node /opt/ultrafusion/config/m3dgr/uf_m3dgr_01.yaml
+uf_node /opt/ultrafusion/config/m3dgr/uf_m3dgr_standard.yaml
 ```
 
 ---
