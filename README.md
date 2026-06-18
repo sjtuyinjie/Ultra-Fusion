@@ -113,11 +113,16 @@ docker run --rm -it --net=host --ipc=host \
   registry.cn-hangzhou.aliyuncs.com/bit_robot_image/ultrafusion:0.1.0
 ```
 
-Inside the container, download and install the release package:
+Inside the container, download and install the release package. The same deb is
+available from GitHub Releases and the project mirror:
 
 ```bash
 wget -O /tmp/ultrafusion.deb \
-  http://47.100.60.229:8088/loc_map/releases/ultrafusion/ultrafusion_0.1.0_amd64.deb
+  https://github.com/sjtuyinjie/Ultra-Fusion/releases/download/v0.1.0/ultrafusion_0.1.0_amd64.deb
+
+# Mirror:
+# wget -O /tmp/ultrafusion.deb \
+#   http://47.100.60.229:8088/loc_map/releases/ultrafusion/ultrafusion_0.1.0_amd64.deb
 
 echo "32400edd7df49a1cbfb80b65becf562a9d6e33eb06b3607c9bec7b4b1b70da4a  /tmp/ultrafusion.deb" | sha256sum -c -
 
