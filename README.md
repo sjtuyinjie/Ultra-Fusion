@@ -85,7 +85,11 @@ Alibaba Cloud ACR:
 docker pull registry.cn-hangzhou.aliyuncs.com/bit_robot_image/ultrafusion:0.1.0
 ```
 
-Docker Hub will be published after registry authentication is available.
+Docker Hub:
+
+```bash
+docker pull maotiandocker/ultrafusion:0.1.0
+```
 
 Or build the public runtime image from the Dockerfile:
 
