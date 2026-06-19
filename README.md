@@ -141,7 +141,7 @@ Open the included RViz layout with:
 rviz -d /opt/ultrafusion/rviz/lio.rviz
 ```
 
-### Run M3DGR
+### 🔥Run Ultra-Fusion on M3DGR
 Download [**M3DGR**](https://github.com/sjtuyinjie/M3DGR) bags and give a star.
 Start ROS and play your bag in the usual ROS way. Use one terminal for
 `roscore`, one terminal for `rosbag play`, and one terminal for `uf_node`.
@@ -176,7 +176,7 @@ M3DGR public release profiles:
 `uf_node m3dgr_standard`. Legacy aliases `uf_node m3dgr_01` and
 `uf_node m3dgr_02` are still supported for backward compatibility.
 
-### Other Released Configs
+## 🔥Run Ultra-Fusion on more datasets
 
 These additional public shortcuts are included for reproducibility. The table
 lists the dataset sequences/settings covered by the released profiles. Sequences
