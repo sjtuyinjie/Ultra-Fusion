@@ -77,27 +77,22 @@ only the ROS/runtime environment: it contains ROS Noetic, rosbag, RViz, Ceres,
 yaml-cpp, and the required system libraries. It does not contain the
 Ultra-Fusion source tree or the release `.deb`.
 
-### Pull the Docker Image
+### Pull the Docker Image for Environments
 
-Alibaba Cloud ACR:
+
 
 ```bash
+#Alibaba Cloud ACR:
 docker pull registry.cn-hangzhou.aliyuncs.com/bit_robot_image/ultrafusion:0.1.0
-```
 
-Docker Hub:
-
-```bash
+#Docker Hub:
 docker pull maotiandocker/ultrafusion:0.1.0
-```
 
-Or build the public runtime image from the Dockerfile:
-
-```bash
+#Or build the public runtime image from the Dockerfile:
 docker build -t ultrafusion:0.1.0 .
 ```
 
-### Install the Release Deb
+### Install the Release Deb of Ultra-Fusion
 
 Start a container. The `/media` mount is optional, but convenient when rosbag
 files are stored on the host under `/media`.
