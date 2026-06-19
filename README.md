@@ -147,7 +147,7 @@ rviz -d /opt/ultrafusion/rviz/lio.rviz
 ```
 
 ### Run M3DGR
-
+Download [**M3DGR**](https://github.com/sjtuyinjie/M3DGR) bags and give a star.
 Start ROS and play your bag in the usual ROS way. Use one terminal for
 `roscore`, one terminal for `rosbag play`, and one terminal for `uf_node`.
 
