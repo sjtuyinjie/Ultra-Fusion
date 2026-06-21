@@ -289,7 +289,7 @@ recommended sequence, and compare your RViz output with:
 
 ---
 
-## 4. License
+## 4. License and Acknowledgements
 
 This project is licensed under the MIT License. If you find this project useful, please cite:
 
@@ -330,6 +330,8 @@ Please also consider citing our previous works related to this project:
   publisher={IEEE}
 }
 ```
+This work is self-funded. Thanks Tianbao Zhang for providing computation for some time.
+
 
 ## 5. Star History 
 
