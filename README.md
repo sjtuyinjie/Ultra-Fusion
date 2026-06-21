@@ -74,11 +74,12 @@ Across these datasets, the paper reports competitive localization performance an
 - temporal/extrinsic perturbations,
 - long-duration and high-speed operation.
 
----
+
 
 > [!NOTE]
 > We currently release executable binaries and demos. Full source code will be released **after paper acceptance**. And we will update the arxiv link of this project in a few days. Please refer to our prior works [Ground-Fusion](https://github.com/SJTU-ViSYS/Ground-Fusion) and [Ground-Fusion++](https://github.com/sjtuyinjie/Ground-Fusion2) for implementation reference.
 
+---
 
 ## ⚙️1. Prerequisites & Installation
 
