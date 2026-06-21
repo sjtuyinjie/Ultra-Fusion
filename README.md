@@ -22,7 +22,7 @@ It is designed for real deployment where sensor degradation (illumination change
 The system unifies WIO, VIO, LIO, and LVIO in one configurable optimization framework, with optional wheel/GNSS fusion and online calibration.
 
 > [!NOTE]
-> We currently release executable binaries and demos. Full source code will be released after paper acceptance.
+> We currently release executable binaries and demos. Full source code will be released **after paper acceptance**.
 
 ---
 ## Overview
