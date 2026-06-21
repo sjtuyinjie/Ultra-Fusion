@@ -236,7 +236,7 @@ You can also pass a config path directly:
 uf_node /opt/ultrafusion/config/m3dgr/uf_m3dgr_standard.yaml
 ```
 
-**Demo preview (other datasets).** The GIFs below match the released shortcuts
+**Demo preview (more datasets).** The GIFs below match the released shortcuts
 in the table above. Run the corresponding `uf_node` command, play the
 recommended sequence, and compare your RViz output with:
 
@@ -266,8 +266,7 @@ recommended sequence, and compare your RViz output with:
   </tr>
 </table>
 
-> M2DGR-Plus (`uf_node m2p`) is included in the release profiles above; a
-> dedicated demo GIF will be added in a later update.
+
 
 ---
 
