@@ -183,9 +183,6 @@ M3DGR public release profiles:
 | `uf_node m3dgr_standard` | `/opt/ultrafusion/config/m3dgr/uf_m3dgr_standard.yaml` | Standard wheeled LVWIO profile: Dynamic01, Varying-illu01, Dark01, and Occlusion01 |
 | `uf_node m3dgr_image_enhance` | `/opt/ultrafusion/config/m3dgr/uf_m3dgr_image_enhance.yaml` | Stronger visual-coupling profile: Corridor01, GNSS-denial01, Longtime01, and Longtime02 |
 
-`uf_node m3dgr` is the default public M3DGR shortcut and is equivalent to
-`uf_node m3dgr_standard`. Legacy aliases `uf_node m3dgr_01` and
-`uf_node m3dgr_02` are still supported for backward compatibility.
 
 **Demo preview (M3DGR).** After launching `uf_node` with the profile above and
 playing the corresponding M3DGR bag in RViz (`/opt/ultrafusion/rviz/lio.rviz`),
