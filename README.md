@@ -3,6 +3,7 @@
 <div align="center">
 
 [![Website](https://img.shields.io/badge/Website-Ultra--Fusion-blue)](https://sjtuyinjie.github.io/ultrafusion-web/)
+[![arXiv](https://img.shields.io/badge/arXiv-2606.21223-b31b1b)](https://arxiv.org/abs/2606.21223)
 [![Dataset](https://img.shields.io/badge/Dataset-M3DGR-orange)](https://github.com/sjtuyinjie/M3DGR)
 [![Video](https://img.shields.io/badge/Video-Youtube-red)](https://www.youtube.com/watch?v=ekzD9ovd1SQ)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](#license)
@@ -294,11 +295,11 @@ recommended sequence, and compare your RViz output with:
 This project is licensed under the MIT License. If you find this project useful, please cite:
 
 ```bibtex
-@article{zhang2025towards,
-  title={Towards Robust Sensor-Fusion Ground SLAM: A Comprehensive Benchmark and A Resilient Framework},
-  author={Zhang, Deteng and Zhang, Junjie and Sun, Yan and Li, Tao and Yin, Hao and Xie, Hongzhao and Yin, Jie},
-  journal={arXiv preprint arXiv:2507.08364},
-  year={2025}
+@article{tian2026ultra,
+  title={Ultra-Fusion: A Resilient Tightly-Coupled Multi-Sensor Fusion SLAM Framework under Sensor Degradation and Spatiotemporal Perturbation for Intelligent Transportation Systems},
+  author={Tian, Yihong and Zhang, Junjie and Li, Liuyang and Zhang, Deteng and Zuo, Yunfei and Yin, Jie},
+  journal={arXiv preprint arXiv:2606.21223},
+  year={2026}
 }
 ```
 
