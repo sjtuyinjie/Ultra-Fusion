@@ -152,7 +152,7 @@ Open the included RViz layout with:
 ```bash
 rviz -d /opt/ultrafusion/rviz/lio.rviz
 ```
-## 2 Run Ultra-Fusion
+## 2 Run Ultra-Fusion on Five benchmakrs
 ### 🔥2.1 Run Ultra-Fusion on M3DGR
 Download [**M3DGR**](https://github.com/sjtuyinjie/M3DGR) bags and give a star.
 Start ROS and play your bag in the usual ROS way. Use one terminal for
@@ -265,7 +265,8 @@ recommended sequence, and compare your RViz output with:
   </tr>
 </table>
 
-### 2.3 Custom profiles: modes, GNSS, extrinsics, and delays
+
+## 3 Custom profiles: modes, GNSS, extrinsics, and delays
 
 The released commands above are aliases for YAML files under
 `/opt/ultrafusion/config`. For a custom setup, copy the closest released config
@@ -291,7 +292,7 @@ rosbag play /media/path/to/your.bag --clock
 `uf_node` reads the YAML only at startup. Restart `uf_node` after changing the
 copied config.
 
-#### 2.3.1 Fusion mode switches
+### 3.1 Fusion mode switches
 
 Keep `imu: 1` for the modes below. Visual sensing is selected by `use_image`.
 `use_gf_standalone_vio` is not the UF visual switch: in the current runtime it
@@ -329,7 +330,9 @@ common:
   image1_topic: /camera/aligned_depth_to_color/image_raw
 ```
 
-#### 2.3.2 Camera intrinsic files
+
+
+## 3.2 Camera intrinsic files
 
 Camera intrinsics are not stored in the main UF YAML. The main YAML points to
 camodocal/OpenCV calibration YAML files:
@@ -376,7 +379,7 @@ profiles, keep it consistent with the released template. RGB-D depth input is
 controlled by `depth: 1` and `common.image1_topic`, not by giving the depth image
 its own camera-intrinsic YAML.
 
-#### 2.3.3 Optional GNSS fusion
+### 3.3 Optional GNSS fusion
 
 GNSS is independent of the LiDAR/visual/wheel mode switches. UF estimator paths
 can add raw GNSS pseudorange/Doppler factors and position-only
@@ -409,7 +412,7 @@ position in the estimator body/IMU frame. Do not enable raw GNSS without the
 matching ephemeris topics; use position-only GNSS in a UF estimator profile or
 leave GNSS off.
 
-#### 2.3.4 Extrinsic convention
+### 3.4 Extrinsic convention
 
 All extrinsics are under `mapping`. Ultra-Fusion uses `T_A_B` to mean
 "transform a point from frame `B` into frame `A`":
@@ -441,7 +444,7 @@ There is no public YAML flag named `estimate_wheel_extrinsic`. To change the
 wheel extrinsic, provide `extrinsic_TIO/RIO` directly or provide a correct
 `extrinsic_TOL/ROL` so UF can derive `T_I_O`.
 
-#### 2.3.5 Calibration and delay fields
+### 3.5 Calibration and delay fields
 
 For fixed calibration, keep both visual online-calibration flags at zero:
 
@@ -499,16 +502,16 @@ biased trajectory is often a frame or time-offset error, not just solver tuning.
 
 ---
 
-## 3. Qualitative Results
+## 4. Qualitative Results
 
-### 3.1 Robustness Under Degradation
+### 4.1 Robustness Under Degradation
 
 <p align="center">
   <img src="images/degradation_qualitative.png" alt="Qualitative robustness under sensor degradation" width="88%">
 </p>
 <p align="center"><em>Representative stress cases: challenging perception conditions with consistent trajectory and map quality.</em></p>
 
-### 3.2 Cross-Platform Results
+### 4.2 Cross-Platform Results
 
 <p align="center">
   <img src="images/trajs.png" alt="Trajectories across ground, legged, and aerial platforms" width="88%">
@@ -520,7 +523,7 @@ biased trajectory is often a frame or time-offset error, not just solver tuning.
 
 ---
 
-## 4. License and Acknowledgements
+## 5. License and Acknowledgements
 
 This project is licensed under the MIT License. If you find this project useful, please cite:
 
@@ -564,6 +567,6 @@ Please also consider citing our previous works related to this project:
 This work is self-funded. Thanks Tianbao Zhang for providing computation for some time.
 
 
-## 5. Star History 
+## 6. Star History 
 
 [![Star History Chart](https://api.star-history.com/svg?repos=sjtuyinjie/Ultra-Fusion&type=Timeline)](https://star-history.com/#Ashutosh00710/github-readme-activity-graph&Timeline)
