@@ -235,6 +235,234 @@ You can also pass a config path directly:
 uf_node /opt/ultrafusion/config/m3dgr/uf_m3dgr_standard.yaml
 ```
 
+### 2.3 Custom profiles: modes, GNSS, extrinsics, and delays
+
+The released commands above are aliases for YAML files under
+`/opt/ultrafusion/config`. For a custom setup, copy the closest released config
+directory so the main YAML and its camera-intrinsic files keep the same relative
+layout. Avoid writing a minimal file from scratch: the runtime still reads
+shared camera, mapping, and noise fields at startup, and reads wheel fields when
+`wheel: 1`.
+
+```bash
+WORK=/tmp/uf_config
+mkdir -p "$WORK"
+cp -a /opt/ultrafusion/config/m3dgr "$WORK"/
+
+CFG="$WORK/m3dgr/uf_m3dgr_standard.yaml"
+${EDITOR:-nano} "$CFG"
+
+roscore &
+sleep 3
+uf_node "$CFG" &
+rosbag play /media/path/to/your.bag --clock
+```
+
+`uf_node` reads the YAML only at startup. Restart `uf_node` after changing the
+copied config.
+
+#### Fusion mode switches
+
+Keep `imu: 1` for the modes below. Visual sensing is selected by `use_image`.
+`use_gf_standalone_vio` is not the UF visual switch: in the current runtime it
+only selects the Ground-Fusion standalone backend for pure VIO
+(`use_lidar: 0`, `use_image: 1`, `wheel: 0`). Ultra-Fusion also has its own
+native VIO/VIWO/LVIO/LVWIO path; keep `use_gf_standalone_vio: false` for those
+UF modes.
+
+| Target mode | `use_lidar` | `use_image` | `wheel` | `use_gf_standalone_vio` | Runtime path |
+| --- | --- | --- | --- | --- | --- |
+| UF `lvwio` | `1` | `1` | `1` | `false` | Native UF LiDAR + visual + wheel |
+| UF `lvio` | `1` | `1` | `0` | `false` | Native UF LiDAR + visual |
+| UF `vio` | `0` | `1` | `0` | `false` | Native UF standalone VIO (`UFVIO`) |
+| GF standalone `vio` | `0` | `1` | `0` | `true` | Ground-Fusion standalone VIO baseline |
+| UF `viwo` | `0` | `1` | `1` | `false` | Native UF standalone visual + wheel |
+| UF `wio` | `0` | `0` | `1` | ignored | Native UF standalone wheel + IMU |
+| UF `lio` | `1` | `0` | `0` | ignored | LiDAR + IMU |
+| UF `lwio` | `1` | `0` | `1` | ignored | LiDAR + wheel + IMU |
+
+Set `depth: 1` only for RGB-D visual profiles that really provide the configured
+depth image; use `depth: 0` for monocular RGB visual profiles. `use_lidar_reproject`
+only matters for LiDAR+visual profiles, so keep the copied profile's value
+unless you are intentionally evaluating that coupling. `use_planar_wheel_factor`
+selects the planar wheel factor model; keep the released profile's value unless
+you are intentionally comparing it with the legacy wheel-pose factor.
+
+Sensor topics are configured in `common`:
+
+```yaml
+common:
+  imu_topic: /camera/imu
+  lid_topic: /livox/mid360/lidar
+  wheel_topic: /odom
+  image0_topic: /camera/color/image_raw/compressed
+  image1_topic: /camera/aligned_depth_to_color/image_raw
+```
+
+#### Camera intrinsic files
+
+Camera intrinsics are not stored in the main UF YAML. The main YAML points to
+camodocal/OpenCV calibration YAML files:
+
+```yaml
+cam0_calib: "color.yaml"
+cam1_calib: "color.yaml"
+```
+
+`cam0_calib` is the primary visual camera file. The runtime loads it as
+`<directory-of-main-config>/<cam0_calib>`, so keep the calibration file next to
+the copied main YAML or preserve the released config directory layout as in the
+copy example above. In the current runtime this field is treated as a path
+relative to the main config directory; an absolute path will still be prefixed
+by that directory.
+
+The released visual profiles use `PINHOLE` or `KANNALA_BRANDT` camera models:
+
+```yaml
+%YAML:1.0
+---
+model_type: PINHOLE
+camera_name: camera
+image_width: 640
+image_height: 480
+distortion_parameters:
+  k1: 0.0
+  k2: 0.0
+  p1: 0.0
+  p2: 0.0
+  k3: 0.0
+projection_parameters:
+  fx: 607.79772949218
+  fy: 607.83526613281
+  cx: 328.79772949218
+  cy: 245.53321838378
+```
+
+For `KANNALA_BRANDT`, use `projection_parameters` fields
+`mu`, `mv`, `u0`, `v0`, `k2`, `k3`, `k4`, and `k5`, following the released
+fisheye-style calibration files. `cam1_calib` is only used when the runtime is
+configured for the two-camera path; for the current single-camera/RGB-D public
+profiles, keep it consistent with the released template. RGB-D depth input is
+controlled by `depth: 1` and `common.image1_topic`, not by giving the depth image
+its own camera-intrinsic YAML.
+
+#### Optional GNSS fusion
+
+GNSS is independent of the LiDAR/visual/wheel mode switches. UF estimator paths
+can add raw GNSS pseudorange/Doppler factors and position-only
+`sensor_msgs/NavSatFix` factors when the bag provides the required topics. The
+GF standalone VIO backend receives raw GNSS only; position-only GNSS fixes are
+not consumed by that backend.
+
+| Use case | Main fields | Notes |
+| --- | --- | --- |
+| Disable GNSS | `gnss_enable: 0` | No GNSS subscribers are started |
+| Raw GNSS | `gnss_enable: 1`, `gnss_raw_enable: true`, `gnss_position_enable: false` | Requires range measurements plus ephemeris/iono topics |
+| Position-only GNSS | `gnss_enable: 1`, `gnss_raw_enable: false`, `gnss_position_enable: true` | Uses `sensor_msgs/NavSatFix` in UF estimator paths |
+| Raw + position GNSS | `gnss_enable: 1`, `gnss_raw_enable: true`, `gnss_position_enable: true` | Use only when both measurement types are available |
+
+Typical GNSS topic and lever-arm fields:
+
+```yaml
+gnss_meas_topic: /ublox_driver/range_meas
+gnss_position_topic: /ublox_driver/receiver_lla
+gnss_ephem_topic: /ublox_driver/ephem
+gnss_glo_ephem_topic: /ublox_driver/glo_ephem
+gnss_iono_params_topic: /ublox_driver/iono_params
+
+gnss_use_antenna_extrinsic: false
+gnss_antenna_in_body: [0.0, 0.0, 0.0]
+```
+
+If `gnss_use_antenna_extrinsic` is true, `gnss_antenna_in_body` is the antenna
+position in the estimator body/IMU frame. Do not enable raw GNSS without the
+matching ephemeris topics; use position-only GNSS in a UF estimator profile or
+leave GNSS off.
+
+#### Extrinsic convention
+
+All extrinsics are under `mapping`. Ultra-Fusion uses `T_A_B` to mean
+"transform a point from frame `B` into frame `A`":
+
+```text
+p_A = R_A_B * p_B + t_A_B
+```
+
+Rotation arrays are row-major 3x3 matrices, and translations are in meters.
+
+| YAML fields | Transform | Meaning |
+| --- | --- | --- |
+| `extrinsic_T`, `extrinsic_R` | `T_I_L` | LiDAR frame `L` to IMU/body frame `I` |
+| `extrinsic_TIC`, `extrinsic_RIC` | `T_I_C` | Camera frame `C` to IMU/body frame `I` |
+| `extrinsic_TCL`, `extrinsic_RCL` | `T_C_L` | LiDAR frame `L` to camera frame `C` |
+| `extrinsic_TOL`, `extrinsic_ROL` | `T_O_L` | LiDAR frame `L` to wheel/odometer frame `O` |
+| `extrinsic_TIO`, `extrinsic_RIO` | `T_I_O` | Wheel/odometer frame `O` to IMU/body frame `I` |
+
+Runtime priority:
+
+| Runtime transform | How UF obtains it |
+| --- | --- |
+| `T_I_L` | Always reads `mapping.extrinsic_T/R` |
+| `T_I_C` | Uses `mapping.extrinsic_TIC/RIC` if present; otherwise computes `T_I_L * inverse(T_C_L)` from `extrinsic_TCL/RCL` |
+| `T_C_L` | If `T_I_C` is present, UF also derives internal `T_C_L = inverse(T_I_C) * T_I_L` |
+| `T_I_O` | Uses explicit `mapping.extrinsic_TIO/RIO` if present; otherwise computes `T_I_L * inverse(T_O_L)` from `extrinsic_TOL/ROL` |
+
+There is no public YAML flag named `estimate_wheel_extrinsic`. To change the
+wheel extrinsic, provide `extrinsic_TIO/RIO` directly or provide a correct
+`extrinsic_TOL/ROL` so UF can derive `T_I_O`.
+
+#### Calibration and delay fields
+
+For fixed calibration, keep both visual online-calibration flags at zero:
+
+```yaml
+estimate_extrinsic: 0
+estimate_td: 0
+td: 0.0
+```
+
+In the current runtime, `estimate_extrinsic` and `estimate_td` are treated as a
+joint online camera-IMU calibration request: any nonzero value starts the
+`T_I_C + td` calibration state machine after the visual feature and motion
+excitation gates pass. The state machine first commits `T_I_C`, then enters the
+visual delay (`td`) stage. Therefore `estimate_td: 1` alone should not be read
+as an isolated delay-only mode. This state machine is driven in the UF
+LiDAR/visual processing path; pure UF standalone VIO/VIWO and GF standalone VIO
+keep their `T_I_C` and `td` parameter blocks fixed in the solver.
+
+| Field | Scope | Code behavior |
+| --- | --- | --- |
+| `estimate_extrinsic` | Camera-IMU | `0` does not request online visual calibration by itself; nonzero requests the joint `T_I_C + td` state machine |
+| `estimate_td` | Visual timing | `0` does not request online visual calibration by itself; nonzero also requests the same `T_I_C + td` state machine |
+| `td` | Visual timing | Visual state time uses `image_timestamp + td` |
+| `common.img_time_offset` | ROS image stamp | Added to the ROS image timestamp before visual buffering; this is separate from `td` |
+| `wheel_initial_td` | Wheel timing | Wheel state time uses `wheel_timestamp + wheel_initial_td` |
+| `TimeSync.initial_lidar_to_imu_dt_sec` | LiDAR-IMU timing | Initial LiDAR-to-IMU time offset |
+| `TimeSync.enable_lidar_imu_online_dt` | LiDAR-IMU timing | Enables online LiDAR-IMU time-offset estimation |
+
+The current public configs use `wheel_initial_td` for wheel timing. Legacy
+fields such as `estimate_td_wheel` and `td_wheel` are not the public switch for
+wheel-delay calibration.
+
+LiDAR-IMU online extrinsic calibration is configured separately:
+
+```yaml
+lidar_imu_calib:
+  enable: false
+  enable_lock_result: true
+  freeze_after_locked_result: true
+  apply_locked_result_to_slam: false
+```
+
+This LiDAR-IMU calibrator estimates the rotation part of `T_I_L`. Locked
+rotation results affect SLAM only when `apply_locked_result_to_slam: true`; the
+LiDAR-IMU translation used by SLAM remains the YAML translation unless you edit
+the config.
+
+When checking a new profile, inspect the startup log lines for `Opti_TIC`,
+`Opti_TIO`, `td`, wheel `td`, GNSS status, and LiDAR-IMU time sync. A smooth but
+biased trajectory is often a frame or time-offset error, not just solver tuning.
+
 **Demo preview (more datasets).** The GIFs below match the released shortcuts
 in the table above. Run the corresponding `uf_node` command, play the
 recommended sequence, and compare your RViz output with:
