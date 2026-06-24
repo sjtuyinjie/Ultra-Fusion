@@ -538,12 +538,17 @@ This project is licensed under the MIT License. If you find this project useful,
 
 Please also consider citing our previous works related to this project:
 ```bibtex
+
 @article{zhang2025towards,
-  title={Towards Robust Sensor-Fusion Ground SLAM: A Comprehensive Benchmark and A Resilient Framework},
   author={Zhang, Deteng and Zhang, Junjie and Sun, Yan and Li, Tao and Yin, Hao and Xie, Hongzhao and Yin, Jie},
-  journal={arXiv preprint arXiv:2507.08364},
-  year={2025}
-}
+  booktitle={2025 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)}, 
+  title={Towards Robust Sensor-Fusion Ground SLAM: A Comprehensive Benchmark and A Resilient Framework}, 
+  year={2025},
+  volume={},
+  number={},
+  pages={8894-8901},
+  doi={10.1109/IROS60139.2025.11247507}}
+
 
 @inproceedings{yin2024ground,
   title={Ground-fusion: A low-cost ground slam system robust to corner cases},
