@@ -3,7 +3,7 @@
 <div align="center">
 
 [![Website](https://img.shields.io/badge/Website-Ultra--Fusion-blue)](https://sjtuyinjie.github.io/ultrafusion-web/)
-[![Hugging Face](https://img.shields.io/badge/Hugging%20Face-Ultra--Fusion-ffcc4d)](https://huggingface.co/TianYihong/Ultra-Fusion)
+[![Hugging Face](https://img.shields.io/badge/Hugging%20Face-pre--built-ffcc4d)](https://huggingface.co/TianYihong/Ultra-Fusion)
 [![arXiv](https://img.shields.io/badge/arXiv-2606.21223-b31b1b)](https://arxiv.org/abs/2606.21223)
 [![Dataset](https://img.shields.io/badge/Dataset-M3DGR-orange)](https://github.com/sjtuyinjie/M3DGR)
 [![Video](https://img.shields.io/badge/Video-Youtube-red)](https://www.youtube.com/watch?v=ekzD9ovd1SQ)
