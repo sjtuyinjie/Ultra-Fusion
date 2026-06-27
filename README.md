@@ -21,6 +21,8 @@ Ultra-Fusion is a tightly-coupled multi-sensor SLAM framework for intelligent tr
 
 Within one configurable optimization framework, Ultra-Fusion supports **WIO, VIO, LIO, and LVIO**, with optional wheel/GNSS fusion and online calibration.
 
+**Adaptation guide:** [Ultra-Fusion Computer Vision Life D360 Sensor Adaptation](docs/visual_life_d360.md)
+
 
 ## Contents
 
@@ -36,6 +38,7 @@ Within one configurable optimization framework, Ultra-Fusion supports **WIO, VIO
 - [2. Run on Five Benchmarks](#2-run-on-five-benchmarks)
   - [2.1 M3DGR](#21-m3dgr)
   - [2.2 Other datasets](#22-other-datasets)
+  - [2.3 Computer Vision Life D360 Sensor Adaptation](#visual-life-d360)
 - [3. Custom Profiles](#3-custom-profiles)
   - [3.1 Fusion modes](#31-fusion-modes)
   - [3.2 Camera intrinsics](#32-camera-intrinsics)
@@ -105,7 +108,7 @@ Reported gains include competitive accuracy and improved localization availabili
 
 **Tested platform:** Ubuntu 20.04 + ROS Noetic.
 
-The public release is a prebuilt `.deb` that installs `uf_node`, benchmark configs, and an RViz layout under `/opt/ultrafusion/`.
+The paper release is the prebuilt `.deb` v0.1.0. The D360 multi-camera adaptation is provided as the separate v0.1.1 release package, which keeps v0.1.0 unchanged and adds the `visual_life` profile under `/opt/ultrafusion/config/`.
 
 > [!TIP]
 > **Recommended: Option A (Docker).** It provides a clean, reproducible runtime and avoids dependency conflicts on your host. Choose Option B (native) only if you need a persistent host installation.
@@ -225,6 +228,7 @@ The `.deb` installs:
 | `/opt/ultrafusion/config/lvig` | MARS-LVIG profile |
 | `/opt/ultrafusion/config/kaist` | KAIST profile |
 | `/opt/ultrafusion/config/groundtour` | GrandTour profile |
+| `/opt/ultrafusion/config/visual_life` | Computer Vision Life D360 multi-camera LVIO profile, available in v0.1.1 |
 | `/opt/ultrafusion/rviz/lio.rviz` | Default RViz layout |
 
 ---
@@ -336,6 +340,24 @@ Additional shortcuts for cross-platform reproducibility. Sequences not listed ma
     </td>
   </tr>
 </table>
+
+<a id="visual-life-d360"></a>
+
+### 2.3 Computer Vision Life D360 Sensor Adaptation
+
+A compact Computer Vision Life D360 adaptation note is provided here so the main README stays focused.
+
+<p align="center">
+  <img src="images/gifs/d360_visual_life.gif" alt="Computer Vision Life D360 multi-camera UF LVIO demo" width="70%">
+</p>
+
+- Detailed guide: [docs/visual_life_d360.md](docs/visual_life_d360.md)
+- Release package: download `ultrafusion_0.1.1_amd64.deb` from GitHub Releases. v0.1.0 remains the paper package.
+- Runtime entry: `uf_node visual_life` after installing the release package, or `uf_node /path/to/config/visual_life/config.yaml` for a custom config copy.
+- Key outputs: `/result_path`, `/curr_cloud`, `/feature_reproject_cloud`, `/colored_lidar_cloud`
+- Demo video: add the recording link to the detailed guide after publication.
+
+This guide highlights the new optional multi-camera adaptation in UF (`use_multi_camera: true`). Use release package v0.1.1 for D360; release v0.1.0 remains the paper version. Existing profiles without `use_multi_camera` keep the original single-camera path.
 
 
 ## 3. Custom Profiles

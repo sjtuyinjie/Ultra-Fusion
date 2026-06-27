@@ -1,0 +1,3 @@
+# Release binaries are uploaded to GitHub Releases, not committed.
+*.deb
+*.deb.sha256
