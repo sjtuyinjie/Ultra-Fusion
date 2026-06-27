@@ -21,7 +21,7 @@ Ultra-Fusion is a tightly-coupled multi-sensor SLAM framework for intelligent tr
 
 Within one configurable optimization framework, Ultra-Fusion supports **WIO, VIO, LIO, and LVIO**, with optional wheel/GNSS fusion and online calibration.
 
-**Adaptation guide:** [Ultra-Fusion Computer Vision Life D360 Sensor Adaptation](docs/visual_life_d360.md)
+**Custom device setup (v0.1.1):** [Adapt UF to your own sensors — D360 walkthrough](docs/visual_life_d360.md)
 
 
 ## Contents
@@ -35,10 +35,10 @@ Within one configurable optimization framework, Ultra-Fusion supports **WIO, VIO
   - [Option A — Docker (recommended)](#option-a--docker-install-recommended-)
   - [Option B — Native install](#option-b--native-install)
   - [Installed files](#installed-files)
-- [2. Run on Five Benchmarks](#2-run-on-five-benchmarks)
+- [2. Run on Benchmarks & Your Device](#2-run-on-benchmarks--your-device)
   - [2.1 M3DGR](#21-m3dgr)
   - [2.2 Other datasets](#22-other-datasets)
-  - [2.3 Computer Vision Life D360 Sensor Adaptation](#visual-life-d360)
+  - [2.3 Adapting Your Own Device (D360 Example)](#adapt-your-device)
 - [3. Custom Profiles](#3-custom-profiles)
   - [3.1 Fusion modes](#31-fusion-modes)
   - [3.2 Camera intrinsics](#32-camera-intrinsics)
@@ -108,7 +108,7 @@ Reported gains include competitive accuracy and improved localization availabili
 
 **Tested platform:** Ubuntu 20.04 + ROS Noetic.
 
-The paper release is the prebuilt `.deb` v0.1.0. The D360 multi-camera adaptation is provided as the separate v0.1.1 release package, which keeps v0.1.0 unchanged and adds the `visual_life` profile under `/opt/ultrafusion/config/`.
+The paper release is the prebuilt `.deb` v0.1.0. v0.1.1 adds optional multi-camera support and a reference `visual_life` profile (Computer Vision Life D360) under `/opt/ultrafusion/config/`—see [§2.3](#adapt-your-device) for the general device-adaptation workflow.
 
 > [!TIP]
 > **Recommended: Option A (Docker).** It provides a clean, reproducible runtime and avoids dependency conflicts on your host. Choose Option B (native) only if you need a persistent host installation.
@@ -176,7 +176,7 @@ which uf_node
 rviz -d /opt/ultrafusion/rviz/lio.rviz
 ```
 
-Proceed to [§2 Run on Five Benchmarks](#2-run-on-five-benchmarks).
+Proceed to [§2 Running Ultra-Fusion](#2-run-on-benchmarks--your-device).
 
 ---
 
@@ -228,14 +228,16 @@ The `.deb` installs:
 | `/opt/ultrafusion/config/lvig` | MARS-LVIG profile |
 | `/opt/ultrafusion/config/kaist` | KAIST profile |
 | `/opt/ultrafusion/config/groundtour` | GrandTour profile |
-| `/opt/ultrafusion/config/visual_life` | Computer Vision Life D360 multi-camera LVIO profile, available in v0.1.1 |
+| `/opt/ultrafusion/config/visual_life` | Reference multi-camera LVIO profile (D360 example), v0.1.1 |
 | `/opt/ultrafusion/rviz/lio.rviz` | Default RViz layout |
 
 ---
-## 2. Run on Five Benchmarks
+## 2. Run on Benchmarks & Your Device
 
 Each released `uf_node <shortcut>` command maps to a YAML profile under `/opt/ultrafusion/config/`.
 You can also pass a config path directly: `uf_node /path/to/config.yaml`.
+
+Sections [2.1](#21-m3dgr) and [2.2](#22-other-datasets) cover public benchmark shortcuts; [2.3](#adapt-your-device) walks through adapting UF to your own sensor rig (D360 as a worked example).
 
 **Typical workflow** — open three terminals:
 
@@ -341,29 +343,36 @@ Additional shortcuts for cross-platform reproducibility. Sequences not listed ma
   </tr>
 </table>
 
-<a id="visual-life-d360"></a>
+<a id="adapt-your-device"></a>
 
-### 2.3 Computer Vision Life D360 Sensor Adaptation
+### 2.3 Adapting Your Own Device (D360 Example)
 
-A compact Computer Vision Life D360 adaptation note is provided here so the main README stays focused.
+Released shortcuts target public benchmarks. To run on **your own sensor rig**, copy the closest profile directory, map ROS topics, add camera calibration files, and set extrinsics—then launch `uf_node` with your YAML. [§3 Custom Profiles](#3-custom-profiles) covers individual fields; this section gives the end-to-end path.
+
+**Full walkthrough:** [docs/visual_life_d360.md](docs/visual_life_d360.md) — general adaptation steps with **Computer Vision Life D360** (three fisheye cameras + Livox LiDAR + IMU) as a working multi-camera LVIO example.
 
 <p align="center">
-  <img src="images/gifs/d360_visual_life.gif" alt="Computer Vision Life D360 multi-camera UF LVIO demo" width="70%">
+  <img src="images/gifs/d360_visual_life.gif" alt="Custom multi-camera LVIO example on D360 data" width="50%">
 </p>
 
-- Detailed guide: [docs/visual_life_d360.md](docs/visual_life_d360.md)
-- Release package: download `ultrafusion_0.1.1_amd64.deb` from GitHub Releases. v0.1.0 remains the paper package.
-- Runtime entry: `uf_node visual_life` after installing the release package, or `uf_node /path/to/config/visual_life/config.yaml` for a custom config copy.
-- Key outputs: `/result_path`, `/curr_cloud`, `/feature_reproject_cloud`, `/colored_lidar_cloud`
-- Demo video: add the recording link to the detailed guide after publication.
+**Quick start (D360 reference profile, v0.1.1):**
 
-This guide highlights the new optional multi-camera adaptation in UF (`use_multi_camera: true`). Use release package v0.1.1 for D360; release v0.1.0 remains the paper version. Existing profiles without `use_multi_camera` keep the original single-camera path.
+| Step | Action |
+| --- | --- |
+| Install | `ultrafusion_0.1.1_amd64.deb` from GitHub Releases (v0.1.0 = paper package) |
+| Copy & edit | `cp -a /opt/ultrafusion/config/visual_life /tmp/my_rig` — adjust topics, `camera*.yaml`, and `multi_camera.modules[]` for your hardware |
+| Run | `uf_node visual_life` or `uf_node /path/to/your/config.yaml` |
+| Verify | RViz: `/result_path`, `/curr_cloud`, `/feature_reproject_cloud`, `/colored_lidar_cloud` (fixed frame: `world`) |
+
+**Multi-camera switch:** set `use_multi_camera: true` and one `multi_camera.modules[]` entry per camera stream. Single-camera profiles (M3DGR, KAIST, etc.) are unchanged when this flag is absent or `false`.
 
 
 ## 3. Custom Profiles
 
 Released shortcuts are aliases to YAML files under `/opt/ultrafusion/config/`.
 To customize, **copy the closest profile directory** so camera-intrinsic files keep their relative paths. Avoid creating a minimal YAML from scratch — the runtime expects the full field set at startup.
+
+For an **end-to-end adaptation walkthrough** (topics → intrinsics → extrinsics → run), start with [§2.3](#adapt-your-device) and [docs/visual_life_d360.md](docs/visual_life_d360.md). This section documents individual YAML fields.
 
 ```bash
 WORK=/tmp/uf_config
@@ -467,6 +476,10 @@ configured for the two-camera path; for the current single-camera/RGB-D public
 profiles, keep it consistent with the released template. RGB-D depth input is
 controlled by `depth: 1` and `common.image1_topic`, not by giving the depth image
 its own camera-intrinsic YAML.
+
+For **multi-camera** rigs (`use_multi_camera: true`), each stream uses
+`multi_camera.modules[].cam_calib` instead of `cam0_calib`. See
+[docs/visual_life_d360.md](docs/visual_life_d360.md) for a full example.
 
 ### 3.3 GNSS fusion
 
