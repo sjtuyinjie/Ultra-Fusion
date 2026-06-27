@@ -21,7 +21,7 @@ Ultra-Fusion is a tightly-coupled multi-sensor SLAM framework for intelligent tr
 
 Within one configurable optimization framework, Ultra-Fusion supports **WIO, VIO, LIO, and LVIO**, with optional wheel/GNSS fusion and online calibration.
 
-**Custom device setup (v0.1.1):** [Adapt UF to your own sensors — D360 walkthrough](docs/visual_life_d360.md)
+**Custom device (v0.1.1):** [Adapt Ultra-Fusion to your sensors](docs/visual_life_d360.md) (D360 example)
 
 
 ## Contents
@@ -108,7 +108,7 @@ Reported gains include competitive accuracy and improved localization availabili
 
 **Tested platform:** Ubuntu 20.04 + ROS Noetic.
 
-The paper release is the prebuilt `.deb` v0.1.0. v0.1.1 adds optional multi-camera support and a reference `visual_life` profile (Computer Vision Life D360) under `/opt/ultrafusion/config/`—see [§2.3](#adapt-your-device) for the general device-adaptation workflow.
+The paper release is v0.1.0. v0.1.1 adds multi-camera support and a reference `visual_life` profile — see [§2.3](#adapt-your-device).
 
 > [!TIP]
 > **Recommended: Option A (Docker).** It provides a clean, reproducible runtime and avoids dependency conflicts on your host. Choose Option B (native) only if you need a persistent host installation.
@@ -228,7 +228,7 @@ The `.deb` installs:
 | `/opt/ultrafusion/config/lvig` | MARS-LVIG profile |
 | `/opt/ultrafusion/config/kaist` | KAIST profile |
 | `/opt/ultrafusion/config/groundtour` | GrandTour profile |
-| `/opt/ultrafusion/config/visual_life` | Reference multi-camera LVIO profile (D360 example), v0.1.1 |
+| `/opt/ultrafusion/config/visual_life` | Multi-camera LVIO reference profile (D360), v0.1.1 |
 | `/opt/ultrafusion/rviz/lio.rviz` | Default RViz layout |
 
 ---
@@ -237,7 +237,7 @@ The `.deb` installs:
 Each released `uf_node <shortcut>` command maps to a YAML profile under `/opt/ultrafusion/config/`.
 You can also pass a config path directly: `uf_node /path/to/config.yaml`.
 
-Sections [2.1](#21-m3dgr) and [2.2](#22-other-datasets) cover public benchmark shortcuts; [2.3](#adapt-your-device) walks through adapting UF to your own sensor rig (D360 as a worked example).
+Sections [2.1–2.2](#21-m3dgr) cover benchmark shortcuts; [2.3](#adapt-your-device) covers custom hardware.
 
 **Typical workflow** — open three terminals:
 
@@ -347,32 +347,26 @@ Additional shortcuts for cross-platform reproducibility. Sequences not listed ma
 
 ### 2.3 Adapting Your Own Device (D360 Example)
 
-Released shortcuts target public benchmarks. To run on **your own sensor rig**, copy the closest profile directory, map ROS topics, add camera calibration files, and set extrinsics—then launch `uf_node` with your YAML. [§3 Custom Profiles](#3-custom-profiles) covers individual fields; this section gives the end-to-end path.
-
-**Full walkthrough:** [docs/visual_life_d360.md](docs/visual_life_d360.md) — general adaptation steps with **Computer Vision Life D360** (three fisheye cameras + Livox LiDAR + IMU) as a working multi-camera LVIO example.
+Copy the closest profile directory, set ROS topics, camera calibration, and extrinsics, then run `uf_node` with your YAML. Details: [docs/visual_life_d360.md](docs/visual_life_d360.md) (D360 = three fisheye cameras + Livox LiDAR + IMU). YAML fields: [§3](#3-custom-profiles).
 
 <p align="center">
-  <img src="images/gifs/d360_visual_life.gif" alt="Custom multi-camera LVIO example on D360 data" width="50%">
+  <img src="images/gifs/d360_visual_life.gif" alt="Multi-camera LVIO on D360 data" width="50%">
 </p>
-
-**Quick start (D360 reference profile, v0.1.1):**
 
 | Step | Action |
 | --- | --- |
-| Install | `ultrafusion_0.1.1_amd64.deb` from GitHub Releases (v0.1.0 = paper package) |
-| Copy & edit | `cp -a /opt/ultrafusion/config/visual_life /tmp/my_rig` — adjust topics, `camera*.yaml`, and `multi_camera.modules[]` for your hardware |
-| Run | `uf_node visual_life` or `uf_node /path/to/your/config.yaml` |
-| Verify | RViz: `/result_path`, `/curr_cloud`, `/feature_reproject_cloud`, `/colored_lidar_cloud` (fixed frame: `world`) |
+| Install | v0.1.1 `.deb` from GitHub Releases |
+| Configure | `cp -a /opt/ultrafusion/config/visual_life /tmp/my_rig` — edit topics, `camera*.yaml`, `multi_camera.modules[]` |
+| Run | `uf_node visual_life` or `uf_node /path/to/config.yaml` |
+| Verify | RViz fixed frame `world`; `/result_path`, `/curr_cloud`, `/feature_reproject_cloud`, `/colored_lidar_cloud` |
 
-**Multi-camera switch:** set `use_multi_camera: true` and one `multi_camera.modules[]` entry per camera stream. Single-camera profiles (M3DGR, KAIST, etc.) are unchanged when this flag is absent or `false`.
+Multi-camera: `use_multi_camera: true` and one `multi_camera.modules[]` entry per stream.
 
 
 ## 3. Custom Profiles
 
 Released shortcuts are aliases to YAML files under `/opt/ultrafusion/config/`.
-To customize, **copy the closest profile directory** so camera-intrinsic files keep their relative paths. Avoid creating a minimal YAML from scratch — the runtime expects the full field set at startup.
-
-For an **end-to-end adaptation walkthrough** (topics → intrinsics → extrinsics → run), start with [§2.3](#adapt-your-device) and [docs/visual_life_d360.md](docs/visual_life_d360.md). This section documents individual YAML fields.
+To customize, **copy the closest profile directory** so camera-intrinsic files keep their relative paths. Avoid creating a minimal YAML from scratch — the runtime expects the full field set at startup. Device adaptation walkthrough: [§2.3](#adapt-your-device), [docs/visual_life_d360.md](docs/visual_life_d360.md).
 
 ```bash
 WORK=/tmp/uf_config
@@ -477,10 +471,7 @@ profiles, keep it consistent with the released template. RGB-D depth input is
 controlled by `depth: 1` and `common.image1_topic`, not by giving the depth image
 its own camera-intrinsic YAML.
 
-For **multi-camera** rigs (`use_multi_camera: true`), each stream uses
-`multi_camera.modules[].cam_calib` instead of `cam0_calib`. See
-[docs/visual_life_d360.md](docs/visual_life_d360.md) for a full example.
-
+Multi-camera rigs use `multi_camera.modules[].cam_calib` instead of `cam0_calib` — see [docs/visual_life_d360.md](docs/visual_life_d360.md).
 ### 3.3 GNSS fusion
 
 GNSS is independent of the LiDAR/visual/wheel mode switches. UF estimator paths
