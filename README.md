@@ -251,7 +251,7 @@ Open RViz in a fourth terminal (optional): `rviz -d /opt/ultrafusion/rviz/lio.rv
 
 ### 2.1 M3DGR
 
-Download [**M3DGR**](https://github.com/sjtuyinjie/M3DGR) rosbags and run:
+Wheeled benchmark with real and simulated sensor-degradation sequences. Download rosbags from the [M3DGR sequence table](https://github.com/sjtuyinjie/M3DGR#5-dataset-sequences), then run:
 
 ```bash
 # Terminal 1
@@ -306,7 +306,14 @@ uf_node m3dgr                  # default (= m3dgr_standard)
 
 ### 2.2 Other datasets
 
-Additional shortcuts for cross-platform reproducibility. Sequences not listed may need parameter retuning.
+Additional shortcuts for cross-platform reproducibility. Download rosbags first, then run the matching command. Sequences not listed may need parameter retuning.
+
+| Dataset | Platform | Download | demo sequences |
+| --- | --- | --- | --- |
+| [M2DGR-Plus](https://github.com/SJTU-ViSYS/M2DGR-plus) | Wheeled ground | [Sequence table](https://github.com/SJTU-ViSYS/M2DGR-plus#3dataset-sequences) | Bridge_01, Bridge_02 |
+| [MARS-LVIG](https://mars.hku.hk/dataset.html) | Aerial UAV | [Google Drive rosbags](https://drive.google.com/drive/folders/1aG21le4QZl9LhSLE1O0vuVDQ8YgAwdas) | HKairport01–03, AMtown/AMvalley, HKisland |
+| [KAIST Complex Urban](https://sites.google.com/view/complex-urban-dataset) | Urban driving | [LiDAR + Stereo download](https://sites.google.com/view/complex-urban-dataset/download-lidar-stereo) | urban25, urban35 (request access on the page) |
+| [GrandTour](https://github.com/leggedrobotics/grand_tour_dataset) | Legged robot | [Dataset repo](https://github.com/leggedrobotics/grand_tour_dataset) | SPX-2, SNOW-2, EIG-1 |
 
 | Command | Config | Recommended sequences |
 | --- | --- | --- |
