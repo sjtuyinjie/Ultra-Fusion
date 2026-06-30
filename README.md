@@ -22,25 +22,33 @@ Ultra-Fusion is a tightly-coupled multi-sensor SLAM framework for intelligent tr
 
 Within one configurable optimization framework, Ultra-Fusion supports **WIO, VIO, LIO, and LVIO**, with optional wheel/GNSS fusion and online calibration.
 
-**Custom device (v0.1.1):** [Adapt Ultra-Fusion to your sensors](docs/visual_life_d360.md) (D360 example). We are releasing new versions with demos, please stay tuned!
 
+**Available releases:**
+
+- **v0.1.0 (ROS1 Noetic)** — pre-built binaries to reproduce the paper benchmarks ([§2.1–2.2](#21-m3dgr-ros1)).
+- **v0.1.1 (ROS1 Noetic)** — multi-camera support and custom-hardware adaptation; [D360 walkthrough](docs/visual_life_d360.md) ([§2.4](#24-adapt-your-device)).
+- **v0.2.0 (ROS2 Humble)** — same `uf_node` + YAML workflow on Ubuntu 22.04 ([§2.3](#23-ros2-humble-runtime)).
+
+More demos and releases are on the way — stay tuned.
 
 ## Contents
 
 - [Overview](#overview)
+  - [Our Goal](#our-goal)
   - [Highlights](#highlights)
   - [Method Overview](#method-overview)
   - [Why Ultra-Fusion](#why-ultra-fusion)
   - [Benchmarks and Findings](#benchmarks-and-findings)
 - [1. Prerequisites & Installation](#1-prerequisites--installation)
-  - [Option A — Docker (recommended)](#option-a--docker-install-recommended-)
-  - [Option A2 — ROS2 Humble Docker](#option-a2--ros2-humble-docker)
-  - [Option B — Native install](#option-b--native-install)
+  - [ROS1 vs ROS2 — which to choose?](#ros1-vs-ros2--which-to-choose)
+  - [Docker installation (recommended)](#docker-installation-recommended-)
+  - [Native installation](#native-installation)
   - [Installed files](#installed-files)
 - [2. Run on Benchmarks & Your Device](#2-run-on-benchmarks--your-device)
-  - [2.1 M3DGR](#21-m3dgr)
-  - [2.2 Other datasets](#22-other-datasets)
-  - [2.3 Adapting Your Own Device (D360 Example)](#adapt-your-device)
+  - [2.1 M3DGR (ROS1)](#21-m3dgr-ros1)
+  - [2.2 Other datasets (ROS1)](#22-other-datasets-ros1)
+  - [2.3 ROS2 Humble runtime](#23-ros2-humble-runtime)
+  - [2.4 Adapting Your Own Device (D360 Example)](#24-adapt-your-device)
 - [3. Custom Profiles](#3-custom-profiles)
   - [3.1 Fusion modes](#31-fusion-modes)
   - [3.2 Camera intrinsics](#32-camera-intrinsics)
@@ -54,12 +62,17 @@ Within one configurable optimization framework, Ultra-Fusion supports **WIO, VIO
 ---
 ## Overview
 
+### Our Goal
+
+We aim to provide a **foundational SLAM system** for the community: one configurable framework that **unifies sensor setups and platforms** (wheeled, legged, aerial), and stays **ultra-resilient** under sensor degradation, timing delays, and extrinsic calibration errors — instead of a pipeline limited to one robot or one sensor stack.
+
 ### Highlights
 
 - Unified sliding-window estimator with timestamp-ordered heterogeneous factors.
 - Observability-aware initialization for robust bootstrap under diverse motion/sensor conditions.
 - Factor-wise reliability scheduling (FRS) to gate/down-weight degraded measurements.
 - Online LiDAR-IMU spatiotemporal calibration during operation.
+- **ROS1 (Noetic) and ROS2 (Humble) runtimes** — same `uf_node` + YAML workflow on Ubuntu 20.04 / 22.04.
 - Validated on wheeled, legged, and aerial platforms across multiple public benchmarks.
 
 **See the [project website](https://sjtuyinjie.github.io/ultrafusion-web/) for videos, benchmark tables, and interactive demos!**
@@ -83,6 +96,7 @@ Compared with pipelines tied to a fixed sensor set, Ultra-Fusion focuses on:
 2. **Reliability** — robust localization under corner-case sensor degradation.
 3. **Deployability** — long-duration and high-speed ITS operation.
 4. **Transferability** — validated on wheeled, legged, and aerial platforms.
+5. **Dual middleware** — ROS1 (Noetic) and ROS2 (Humble) runtimes share the same YAML-driven `uf_node` workflow.
 
 ---
 
@@ -108,35 +122,42 @@ Reported gains include competitive accuracy and improved localization availabili
 
 ## 1. Prerequisites & Installation
 
-**Tested platform:** Ubuntu 20.04 + ROS Noetic for the paper package. A ROS2
-Humble runtime package is provided for Ubuntu 22.04.
+<a id="ros1-vs-ros2--which-to-choose"></a>
 
-The paper release is v0.1.0. v0.1.1 adds multi-camera support and a reference `visual_life` profile — see [§2.3](#adapt-your-device).
+### ROS1 vs ROS2 — which to choose?
+
+| | **ROS1 Noetic** | **ROS2 Humble** |
+| --- | --- | --- |
+| OS | Ubuntu 20.04 | Ubuntu 22.04 |
+| Package | v0.1.0 (paper) / v0.1.1 (multi-camera) | v0.2.0 |
+| Install | [Docker](#docker-installation-recommended-) or [Native](#native-installation) | Same paths — pick the ROS2 image or deps script |
+| Data | ROS1 bags (`rosbag play`) | ROS2 bags (`ros2 bag play`) |
+| Profiles | All five benchmarks + custom device | Any YAML profile — point topics at your ROS2 drivers ([M3DGR example](#example-m3dgr-on-ros2)) |
+| Docs | [§2.1–2.2](#21-m3dgr-ros1) · [§2.4](#24-adapt-your-device) | [§2.3](#23-ros2-humble-runtime) · [ros2 guide](docs/ros2_humble_m3dgr.md) |
 
 > [!TIP]
-> **Recommended: Option A (Docker).** It provides a clean, reproducible runtime and avoids dependency conflicts on your host. Choose Option B (native) only if you need a persistent host installation.
+> **First time?** Start with **ROS1** for the full benchmark suite and hardware adaptation guide. Choose **ROS2** when your drivers or recordings are already on Humble — Ultra-Fusion is not tied to a single dataset.
 
-| Path | When to use | Summary |
-| --- | --- | --- |
-| **[Option A — Docker](#option-a--docker-install-recommended-)** ⭐ | First-time users, quick demos | Pull runtime image → start container → install `.deb` |
-| **[Option A2 — ROS2 Humble Docker](#option-a2--ros2-humble-docker)** | ROS2 M3DGR playback | Pull/build Humble image → install ROS2 `.deb` → play ROS2 bag |
-| **[Option B — Native](#option-b--native-install)** | Long-term host deployment | Install ROS + deps on host → install `.deb` |
+The paper release is **v0.1.0**. **v0.1.1** adds multi-camera support and the `visual_life` reference profile — see [§2.4](#24-adapt-your-device).
 
 ---
 
-### Option A — Docker install (recommended) ⭐
+<a id="docker-installation-recommended-"></a>
 
-The image ships **only the ROS/runtime stack** (Noetic, RViz, Ceres, yaml-cpp, system libs).
-You still need to install the Ultra-Fusion `.deb` inside the container.
+### Docker installation (recommended) ⭐
 
-**Step 1 — Clone this repository** (mounts into the container as `/workspace`)
+Docker images ship **only the ROS/runtime stack** (middleware, RViz, Ceres, yaml-cpp, system libraries). Install the Ultra-Fusion `.deb` inside the container after starting it.
+
+**Step 1 — Clone this repository** (mounted as `/workspace` in the container)
 
 ```bash
 git clone https://github.com/sjtuyinjie/Ultra-Fusion.git
 cd Ultra-Fusion
 ```
 
-**Step 2 — Pull the runtime image**
+#### ROS1 Noetic (Ubuntu 20.04)
+
+**Step 2 — Pull the image**
 
 ```bash
 # Alibaba Cloud ACR (recommended in China):
@@ -149,9 +170,9 @@ docker pull maotiandocker/ultrafusion:0.1.0
 docker build -t ultrafusion:0.1.0 .
 ```
 
-**Step 3 — Start a container** (with RViz GUI support)
+**Step 3 — Start a container** (RViz GUI enabled)
 
-Add `-v /media:/media:ro` if your rosbags are stored under `/media` on the host.
+Add `-v /media:/media:ro` if your rosbags live under `/media` on the host.
 
 ```bash
 xhost +local:docker
@@ -165,7 +186,7 @@ docker run --rm -it --net=host --ipc=host \
   registry.cn-hangzhou.aliyuncs.com/bit_robot_image/ultrafusion:0.1.0
 ```
 
-**Step 4 — Install Ultra-Fusion inside the container**
+**Step 4 — Install Ultra-Fusion**
 
 ```bash
 cd /workspace
@@ -182,29 +203,17 @@ rviz -d /opt/ultrafusion/rviz/lio.rviz
 
 Proceed to [§2 Running Ultra-Fusion](#2-run-on-benchmarks--your-device).
 
----
+#### ROS2 Humble (Ubuntu 22.04)
 
-### Option A2 — ROS2 Humble Docker
+Same CMake-based `uf_node` runtime as ROS1; no `colcon build` is needed with the prebuilt `.deb`.
 
-The ROS2 release uses Ubuntu 22.04 + ROS2 Humble and keeps the same CMake-based
-Ultra-Fusion runtime. It does not require `colcon build` for users of the
-prebuilt `.deb`.
-
-```bash
-# Docker Hub:
-docker pull maotiandocker/ultrafusion-ros2:0.2.0
-
-# Alibaba Cloud ACR:
-docker pull registry.cn-hangzhou.aliyuncs.com/bit_robot_image/ultrafusion-ros2:0.2.0
-
-# Or build locally:
-docker build -f Dockerfile.ros2 -t ultrafusion-ros2:0.2.0 .
-```
-
-Published digests are recorded in
-[docs/ros2_humble_m3dgr.md](docs/ros2_humble_m3dgr.md).
-
-Start a ROS2 container:
+| Step | Command |
+| --- | --- |
+| 1. Pull image | `docker pull maotiandocker/ultrafusion-ros2:0.2.0` (ACR: `registry.cn-hangzhou.aliyuncs.com/bit_robot_image/ultrafusion-ros2:0.2.0`) |
+| 2. Start container | See block below |
+| 3. Install `.deb` | `./scripts/install_ultrafusion_ros2_deb.sh` |
+| 4. Source ROS2 | `source /opt/ros/humble/setup.bash` |
+| 5. Run | [§2.3](#23-ros2-humble-runtime) |
 
 ```bash
 xhost +local:docker
@@ -216,24 +225,23 @@ docker run --rm -it --net=host --ipc=host \
   -v /media:/media:ro \
   -v "$(pwd)":/workspace \
   maotiandocker/ultrafusion-ros2:0.2.0
-```
 
-Install the ROS2 release package:
-
-```bash
 cd /workspace
 ./scripts/install_ultrafusion_ros2_deb.sh
 source /opt/ros/humble/setup.bash
 ```
 
-ROS2 M3DGR conversion and replay instructions are in
-[docs/ros2_humble_m3dgr.md](docs/ros2_humble_m3dgr.md).
+Image digests and troubleshooting: [docs/ros2_humble_m3dgr.md](docs/ros2_humble_m3dgr.md).
 
 ---
 
-### Option B — Native install
+<a id="native-installation"></a>
 
-For users who prefer running directly on the host without Docker.
+### Native installation
+
+For hosts that run Ultra-Fusion directly without Docker.
+
+#### ROS1 Noetic (Ubuntu 20.04)
 
 **Step 1 — Clone and install dependencies**
 
@@ -264,11 +272,48 @@ which uf_node
 rviz -d /opt/ultrafusion/rviz/lio.rviz
 ```
 
+Proceed to [§2 Running Ultra-Fusion](#2-run-on-benchmarks--your-device).
+
+#### ROS2 Humble (Ubuntu 22.04)
+
+Dependencies mirror [Dockerfile.ros2](Dockerfile.ros2).
+
+**Step 1 — Clone and install dependencies**
+
+```bash
+git clone https://github.com/sjtuyinjie/Ultra-Fusion.git
+cd Ultra-Fusion
+./scripts/install_native_ros2_deps.sh
+```
+
+Installs ROS2 Humble, PCL/OpenCV/Eigen, `rosbags`, and builds Ceres 2.1.0 and yaml-cpp 0.8.0.
+
+**Step 2 — Install Ultra-Fusion ROS2 package**
+
+```bash
+./scripts/install_ultrafusion_ros2_deb.sh   # add --mirror if GitHub is slow
+```
+
+**Step 3 — Source ROS2** (required in every new shell)
+
+```bash
+source /opt/ros/humble/setup.bash
+```
+
+**Step 4 — Verify**
+
+```bash
+which uf_node
+rviz2 -d /opt/ultrafusion/rviz/lio_ros2.rviz
+```
+
+Proceed to [§2.3 ROS2 runtime](#23-ros2-humble-runtime).
+
 ---
 
 ### Installed files
 
-The `.deb` installs:
+**ROS1 package** (`ultrafusion_*.deb`):
 
 | Path | Description |
 | --- | --- |
@@ -282,15 +327,25 @@ The `.deb` installs:
 | `/opt/ultrafusion/config/visual_life` | Multi-camera LVIO reference profile (D360), v0.1.1 |
 | `/opt/ultrafusion/rviz/lio.rviz` | Default RViz layout |
 
+**ROS2 package** (`ultrafusion-ros2_*.deb`):
+
+| Path | Description |
+| --- | --- |
+| `/opt/ultrafusion/bin/uf_node` | Main executable (ROS2 runtime) |
+| `/opt/ultrafusion/config/m3dgr/uf_m3dgr_ros2_*.yaml` | ROS2 YAML profiles |
+| `/opt/ultrafusion/rviz/lio_ros2.rviz` | RViz2 layout |
+
 ---
 ## 2. Run on Benchmarks & Your Device
 
-Each released `uf_node <shortcut>` command maps to a YAML profile under `/opt/ultrafusion/config/`.
-You can also pass a config path directly: `uf_node /path/to/config.yaml`.
+Each `uf_node <shortcut>` maps to a YAML under `/opt/ultrafusion/config/`. You can also pass a path directly: `uf_node /path/to/config.yaml`.
 
-Sections [2.1–2.2](#21-m3dgr) cover benchmark shortcuts; [2.3](#adapt-your-device) covers custom hardware.
+| Runtime | Source ROS | Play data | Launch | RViz |
+| --- | --- | --- | --- | --- |
+| **ROS1** | `source /opt/ros/noetic/setup.bash` | `rosbag play … --clock` | `uf_node <shortcut>` | `rviz -d /opt/ultrafusion/rviz/lio.rviz` |
+| **ROS2** | `source /opt/ros/humble/setup.bash` | `ros2 bag play … --clock` | `uf_node /path/to/config.yaml` | `rviz2 -d /opt/ultrafusion/rviz/lio_ros2.rviz` |
 
-**Typical workflow** — open three terminals:
+**ROS1 three-terminal workflow:**
 
 | Terminal | Command |
 | --- | --- |
@@ -298,11 +353,13 @@ Sections [2.1–2.2](#21-m3dgr) cover benchmark shortcuts; [2.3](#adapt-your-dev
 | 2 | `rosbag play /path/to/your.bag --clock` |
 | 3 | `uf_node <shortcut>` |
 
-Open RViz in a fourth terminal (optional): `rviz -d /opt/ultrafusion/rviz/lio.rviz`
+[§2.1–2.2](#21-m3dgr-ros1) walk through ROS1 benchmarks; [§2.3](#23-ros2-humble-runtime) covers the ROS2 runtime; [§2.4](#24-adapt-your-device) shows how to adapt your own hardware.
 
-### 2.1 M3DGR
+<a id="21-m3dgr-ros1"></a>
 
-Wheeled benchmark with real and simulated sensor-degradation sequences. Download rosbags from the [M3DGR sequence table](https://github.com/sjtuyinjie/M3DGR#5-dataset-sequences), then run:
+### 2.1 M3DGR (ROS1)
+
+Wheeled benchmark with real and simulated sensor-degradation sequences. Download rosbags from the [M3DGR sequence table](https://github.com/sjtuyinjie/M3DGR#5-dataset-sequences), then launch:
 
 ```bash
 # Terminal 1
@@ -355,45 +412,7 @@ uf_node m3dgr                  # default (= m3dgr_standard)
   </tr>
 </table>
 
-#### M3DGR on ROS2 Humble
-
-For the ROS2 release, convert the ROS1 M3DGR bag to a ROS2 bag with common
-topics first:
-
-```bash
-python3 -m pip install --user rosbags
-
-python3 scripts/convert_m3dgr_ros1_to_ros2_common.py \
-  --src /media/path/to/M3DGR/Grass01.bag \
-  --dst /tmp/grass01_20s_ros2 \
-  --duration 20 \
-  --overwrite
-```
-
-Then run ROS2 playback:
-
-```bash
-source /opt/ros/humble/setup.bash
-uf_node /opt/ultrafusion/config/m3dgr/uf_m3dgr_ros2_lvwio.yaml
-```
-
-```bash
-source /opt/ros/humble/setup.bash
-ros2 bag play /tmp/grass01_20s_ros2 --clock
-```
-
-Open the ROS2 RViz layout and verify live map/path topics:
-
-```bash
-rviz2 -d /opt/ultrafusion/rviz/lio_ros2.rviz
-ros2 topic echo /curr_cloud --once --field width
-ros2 topic echo /result_lidar_path --once --field header.frame_id
-```
-
-See [docs/ros2_humble_m3dgr.md](docs/ros2_humble_m3dgr.md) for the ROS2 Docker
-image, `.deb`, Docker Hub/ACR release tags, and full-bag conversion commands.
-
-### 2.2 Other datasets
+### 2.2 Other datasets (ROS1)
 
 Additional shortcuts for cross-platform reproducibility. Download rosbags first, then run the matching command. Sequences not listed may need parameter retuning.
 
@@ -457,6 +476,70 @@ Copy the closest profile directory, set ROS topics, camera calibration, and extr
 | Verify | RViz fixed frame `world`; `/result_path`, `/curr_cloud`, `/feature_reproject_cloud`, `/colored_lidar_cloud` |
 
 Multi-camera: `use_multi_camera: true` and one `multi_camera.modules[]` entry per stream.
+
+
+<a id="24-ros2-humble-runtime"></a>
+
+### 2.4 ROS2 Humble runtime
+
+v0.2.0 adds a **ROS2 Humble runtime** alongside ROS1. The workflow is the same: `uf_node` + YAML profile, `ros2 bag play` (or live topics), RViz2 for visualization. **Any ROS2 dataset** works once topics match a profile — copy a released YAML, edit `common.*` fields, and launch.
+
+Requires [ROS2 install](#ros2-humble--docker) (Docker or [Native](#ros2-humble--native-install)).
+
+**Two-terminal workflow:**
+
+| Terminal | Command |
+| --- | --- |
+| 1 | `source /opt/ros/humble/setup.bash` → `uf_node /path/to/config.yaml` |
+| 2 | `ros2 bag play /path/to/your_ros2_bag --clock` |
+
+Optional RViz2: `rviz2 -d /opt/ultrafusion/rviz/lio_ros2.rviz` (fixed frame: `world`).
+
+**Adapt your own ROS2 data:**
+
+```bash
+cp /opt/ultrafusion/config/m3dgr/uf_m3dgr_ros2_lvwio.yaml /tmp/my_ros2.yaml
+# edit common.imu_topic, lid_topic, image topics, extrinsics, fusion switches
+uf_node /tmp/my_ros2.yaml
+```
+
+Released ROS2 profiles live under `/opt/ultrafusion/config/m3dgr/uf_m3dgr_ros2_*.yaml`. Field reference: [§3 Custom Profiles](#3-custom-profiles).
+
+<a id="example-m3dgr-on-ros2"></a>
+
+#### Example: M3DGR on ROS2
+
+M3DGR ships as ROS1 bags. Use the converter script to produce a ROS2 bag with standard common topics, then replay with any ROS2 profile that matches:
+
+```bash
+python3 -m pip install --user rosbags
+
+python3 scripts/convert_m3dgr_ros1_to_ros2_common.py \
+  --src /media/path/to/M3DGR/Grass01.bag \
+  --dst /tmp/grass01_20s_ros2 \
+  --duration 20 \
+  --overwrite
+```
+
+```bash
+source /opt/ros/humble/setup.bash
+uf_node /opt/ultrafusion/config/m3dgr/uf_m3dgr_ros2_lvwio.yaml
+```
+
+```bash
+source /opt/ros/humble/setup.bash
+ros2 bag play /tmp/grass01_20s_ros2 --clock
+```
+
+Verify:
+
+```bash
+rviz2 -d /opt/ultrafusion/rviz/lio_ros2.rviz
+ros2 topic echo /curr_cloud --once --field width
+ros2 topic echo /result_lidar_path --once --field header.frame_id
+```
+
+Full-bag conversion, expected topics, and release checklist: [docs/ros2_humble_m3dgr.md](docs/ros2_humble_m3dgr.md).
 
 
 ## 3. Custom Profiles
@@ -568,6 +651,7 @@ controlled by `depth: 1` and `common.image1_topic`, not by giving the depth imag
 its own camera-intrinsic YAML.
 
 Multi-camera rigs use `multi_camera.modules[].cam_calib` instead of `cam0_calib` — see [docs/visual_life_d360.md](docs/visual_life_d360.md).
+
 ### 3.3 GNSS fusion
 
 GNSS is independent of the LiDAR/visual/wheel mode switches. UF estimator paths
@@ -707,7 +791,7 @@ biased trajectory is often a frame or time-offset error, not just solver tuning.
 </p>
 <p align="center"><em>Trajectory estimation examples on ground, legged, and UAV datasets.</em></p>
 
-> For full-scene playback demos, see **Expected output** in [§2.1](#21-m3dgr) and [§2.2](#22-other-datasets).
+> For full-scene playback demos, see **Expected output** in [§2.1](#21-m3dgr-ros1) and [§2.2](#22-other-datasets-ros1).
 
 ---
 
