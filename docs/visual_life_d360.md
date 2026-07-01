@@ -26,6 +26,8 @@ YAML field reference: [§3 Custom Profiles](../README.md#3-custom-profiles).
 
 ## D360 Example
 
+Download the D360 bag from [Baidu Netdisk](https://pan.baidu.com/s/1hrrsmn3BJP4seY4z82qeZw?pwd=thce), extraction code: `thce`.
+
 **Bag layout:**
 
 ```text

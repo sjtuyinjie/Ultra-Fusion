@@ -528,6 +528,7 @@ Copy the closest profile directory, set ROS topics, camera calibration, and extr
 
 | Step | Action |
 | --- | --- |
+| Download | [D360 bag (Baidu Netdisk)](https://pan.baidu.com/s/1hrrsmn3BJP4seY4z82qeZw?pwd=thce), extraction code: `thce` |
 | Install | v0.1.1 `.deb` from GitHub Releases |
 | Configure | `cp -a /opt/ultrafusion/config/visual_life /tmp/my_rig` — edit topics, `camera*.yaml`, `multi_camera.modules[]` |
 | Run | `uf_node visual_life` or `uf_node /path/to/config.yaml` |
